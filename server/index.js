@@ -5,7 +5,9 @@ const cors = require('cors');
 
 const db = require('./db');
 const AuthRouter = require('./Auth/Auth.index');
-const ErrorHandlerMiddlewares = require('./Middlewares/Errors.Middlewares');
+const UserRouter = require('./User/User.index');
+const AuthMiddlewares = require('./Middlewares/Auth.middleware');
+const ErrorHandlerMiddlewares = require('./Middlewares/Errors.middlewares');
 
 const PORT = process.env.PORT || 5000;
 const app = express();
@@ -27,6 +29,7 @@ app.get('/', (req, res, next) => {
 });
 
 app.use('/api/v1/auth', AuthRouter);
+app.use('/api/v1/users', AuthMiddlewares.userIsLoggedIn, AuthMiddlewares.userIsAdmin, UserRouter);
 
 app.use(ErrorHandlerMiddlewares.notFoundHanlder);
 app.use(ErrorHandlerMiddlewares.errorHandler);
