@@ -1,4 +1,4 @@
-const User = require('../User/User.modal');
+const User = require('../User/User.model');
 const Bcrypt = require('../Lib/Bcrypt.lib');
 const JWT = require('../Lib/Jwt.lib');
 

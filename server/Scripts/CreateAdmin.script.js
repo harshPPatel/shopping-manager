@@ -1,21 +1,15 @@
-// Find admin in db
-// If does not exists, create one
-  // make sure the password is hashed
-// If exists, log message
-
-const User = require('../User/User.modal');
+const User = require('../User/User.model');
 const Bcrypt = require('../Lib/Bcrypt.lib');
-
 
 const createAdminAccount = async () => {
   const AdminUser = await User.findOne({
-      username: process.env.ADMIN_USERNAME
-    }).exec();
+    username: process.env.ADMIN_USERNAME,
+  }).exec();
   if (AdminUser) {
     console.log('Admin account already exists. Skipping "Create Admin Account" process.');
   } else {
     Bcrypt.hashPassword(process.env.ADMIN_PASSWORD)
-      .then(async (hashedPassword) => {     
+      .then(async (hashedPassword) => {
         const newAdminUser = new User({
           username: process.env.ADMIN_USERNAME,
           password: hashedPassword,
@@ -35,3 +29,5 @@ const createAdminAccount = async () => {
       });
   }
 };
+
+createAdminAccount();

@@ -10,7 +10,7 @@ const updateValidator = async (req, res, next) => {
       .pattern(new RegExp('^[\\w&^%$!]{6,30}$')),
   });
 
-  if (req.params.username === req.body.username && !req.body.password) {
+  if (req.body.username && req.params.username === req.body.username && !req.body.password) {
     next(new Error('Invalid Operation'));
     return;
   }
@@ -25,5 +25,5 @@ const updateValidator = async (req, res, next) => {
 };
 
 module.exports = {
-  updateValidator
+  updateValidator,
 };

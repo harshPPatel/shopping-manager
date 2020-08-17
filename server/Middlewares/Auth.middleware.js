@@ -1,5 +1,5 @@
 const { decodeToken } = require('../Lib/Jwt.lib');
-const User = require('../User/User.modal');
+const User = require('../User/User.model');
 
 const userIsLoggedIn = (req, res, next) => {
   let token = req.headers.authorization;
@@ -24,8 +24,7 @@ const userIsLoggedIn = (req, res, next) => {
 };
 
 const userIsAdmin = (req, res, next) => {
-  if (req.username !== process.env.ADMIN_USERNAME)
-  {
+  if (req.username !== process.env.ADMIN_USERNAME) {
     res.status(403);
     next(new Error('Access Forbidden'));
     return;

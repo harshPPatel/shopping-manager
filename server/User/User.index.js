@@ -2,12 +2,12 @@ const express = require('express');
 
 const CreateUserValidator = require('../Auth/Login.validator');
 const UserValidators = require('./User.Validator');
-const User = require('./User.modal');
+const User = require('./User.model');
 const Bcrypt = require('../Lib/Bcrypt.lib');
 
 const Router = express.Router();
 
-Router.get('/', async (req, res, next) => {
+Router.get('/', async (req, res) => {
   const dbUsers = await User.find().exec();
   const responseUsers = dbUsers.map((user) => ({
     username: user.username,
@@ -30,7 +30,7 @@ Router.post('/create', CreateUserValidator, async (req, res, next) => {
   const dbUser = new User(user);
 
   dbUser.save()
-    .then((dbResponse) => {
+    .then(() => {
       res.status(200);
       res.json({
         createdUser: dbUser.username,
@@ -54,23 +54,23 @@ Router.put('/:username', UserValidators.updateValidator, async (req, res, next) 
 
   if (!dbUser) {
     res.status(404);
-    next(new Error("User does not exist"));
+    next(new Error('User does not exist'));
     return;
   }
 
-  const password = req.body.password;
+  const { password } = req.body;
   if (password) {
     const hashedPassword = await Bcrypt.hashPassword(password);
-  
+
     if (hashedPassword !== dbUser.password) {
       dbUser.password = hashedPassword;
     }
   }
-  
+
   dbUser.username = req.body.username.toString().trim();
 
   dbUser.save()
-    .then((dbResponse) => {
+    .then(() => {
       res.status(200);
       res.json({
         editedUser: dbUser.username,
@@ -87,7 +87,7 @@ Router.delete('/:username', async (req, res, next) => {
 
   if (!dbUser) {
     res.status(404);
-    next(new Error("User does not exist"));
+    next(new Error('User does not exist'));
     return;
   }
 
@@ -96,8 +96,8 @@ Router.delete('/:username', async (req, res, next) => {
       res.status(200);
       res.json({
         deletedUser: req.params.username.toString().trim(),
-        message: 'User had been deleted successfully'
-      })
+        message: 'User had been deleted successfully',
+      });
     })
     .catch(next);
 });

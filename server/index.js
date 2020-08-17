@@ -1,4 +1,4 @@
-const dotenv = require('dotenv').config();
+require('dotenv').config();
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
@@ -6,6 +6,7 @@ const cors = require('cors');
 const db = require('./db');
 const AuthRouter = require('./Auth/Auth.index');
 const UserRouter = require('./User/User.index');
+const ProductRouter = require('./Products/Products.index');
 const AuthMiddlewares = require('./Middlewares/Auth.middleware');
 const ErrorHandlerMiddlewares = require('./Middlewares/Errors.middlewares');
 
@@ -20,9 +21,9 @@ db.getConnection(app);
 
 app.on('dbConnected', () => {
   require('./Scripts/CreateAdmin.script');
-})
+});
 
-app.get('/', (req, res, next) => {
+app.get('/', (req, res) => {
   res.json({
     message: 'Welcome to the API for shopping manager!',
   });
@@ -30,6 +31,7 @@ app.get('/', (req, res, next) => {
 
 app.use('/api/v1/auth', AuthRouter);
 app.use('/api/v1/users', AuthMiddlewares.userIsLoggedIn, AuthMiddlewares.userIsAdmin, UserRouter);
+app.use('/api/v1/products', AuthMiddlewares.userIsLoggedIn, ProductRouter);
 
 app.use(ErrorHandlerMiddlewares.notFoundHanlder);
 app.use(ErrorHandlerMiddlewares.errorHandler);
