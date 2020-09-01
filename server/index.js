@@ -7,6 +7,7 @@ const db = require('./db');
 const AuthRouter = require('./Auth/Auth.index');
 const UserRouter = require('./User/User.index');
 const ProductRouter = require('./Products/Products.index');
+const ShopsRouter = require('./Shops/Shops.index');
 const AuthMiddlewares = require('./Middlewares/Auth.middleware');
 const ErrorHandlerMiddlewares = require('./Middlewares/Errors.middlewares');
 
@@ -32,6 +33,7 @@ app.get('/', (req, res) => {
 app.use('/api/v1/auth', AuthRouter);
 app.use('/api/v1/users', AuthMiddlewares.userIsLoggedIn, AuthMiddlewares.userIsAdmin, UserRouter);
 app.use('/api/v1/products', AuthMiddlewares.userIsLoggedIn, ProductRouter);
+app.use('/api/v1/shops', AuthMiddlewares.userIsLoggedIn, AuthMiddlewares.userIsAdmin, ShopsRouter);
 
 app.use(ErrorHandlerMiddlewares.notFoundHanlder);
 app.use(ErrorHandlerMiddlewares.errorHandler);

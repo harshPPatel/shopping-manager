@@ -5,7 +5,7 @@ const ShopSchema = new Schema({
     type: String,
     required: true,
     trim: true,
-    match: /^\S+$/,
+    match: /[\w ]+/,
   },
 }, { timestamps: true });
 
