@@ -2,6 +2,7 @@
   <div class="home">
     <h1>Login</h1>
     <form>
+      <p class="error" v-if="user.authError">{{ user.authError }}</p>
       <v-text-field
         v-model="username"
         :error-messages="usernameErrors"
@@ -32,6 +33,8 @@
 
 <script>
 import { validationMixin } from 'vuelidate';
+import { mapState } from 'vuex';
+
 import { required, maxLength, minLength } from 'vuelidate/lib/validators';
 import store from '../store';
 
@@ -47,13 +50,25 @@ export default {
     password: '',
     showPassword: false,
   }),
+  mounted() {
+    store.subscribe((mutation, state) => {
+      if (mutation.type === 'user/updateIsLoggedIn') {
+        if (state.user.isLoggedIn) {
+          this.$router.push('/products');
+        }
+      }
+    });
+  },
   methods: {
-    submit() {
+    async submit() {
       // this.$v.$touch();
-      store.dispatch('user/login', {
+      await store.dispatch('user/login', {
         username: this.username,
         password: this.password,
       });
+      if (this.user.isLoggedIn) {
+        this.$router.push('/products');
+      }
     },
     clear() {
       this.$v.$reset();
@@ -78,6 +93,7 @@ export default {
       if (!this.$v.password.required) errors.push('Password is required');
       return errors;
     },
+    ...mapState(['user']),
   },
 };
 </script>
@@ -87,5 +103,11 @@ export default {
   min-width: 400px;
   width: 50%;
   margin: 100px auto 0;
+}
+
+.error {
+  color: white;
+  padding: 8px 16px;
+  border-radius: 5px;
 }
 </style>

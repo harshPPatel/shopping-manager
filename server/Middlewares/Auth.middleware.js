@@ -29,6 +29,7 @@ const userIsAdmin = (req, res, next) => {
     next(new Error('Access Forbidden'));
     return;
   }
+  req.isAdmin = true;
   next();
 };
 

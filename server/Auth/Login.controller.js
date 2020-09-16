@@ -30,12 +30,12 @@ const loginController = async (req, res, next) => {
             username: dbUser.username,
             token: `Bearer ${token}`,
             message: 'You are logged in successfully!',
+            isAdmin: dbUser.username === process.env.ADMIN_USERNAME,
           });
-          return;
         })
-        .catch(jwtErr => next(new Error(jwtErr)));
+        .catch((jwtErr) => next(new Error(jwtErr)));
     })
-    .catch(err => next(new Error(err)));
+    .catch((err) => next(new Error(err)));
 };
 
 module.exports = loginController;

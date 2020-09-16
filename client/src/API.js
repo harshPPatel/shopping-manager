@@ -13,7 +13,9 @@ const API = async (method, path, data) => {
     .then((res) => res.json())
     .then((res) => {
       if (res.errorCode) {
-        throw new Error(res.message);
+        const error = new Error(res.message);
+        error.errorCode = res.errorCode;
+        throw error;
       }
       return res;
     });
