@@ -1,8 +1,20 @@
-[x] update backend to return isAdmin in response
-[x] hide logout button
-[x] hide other navigation items if user is not logged in
-[x] hide admin paths from normal user
-[x] app loads, check if user is already logged in or not.
+[ ] products view
+  [x] add product button (only visible if user is admin) and on click, it displays modal
+  [x] data table for products
+  [ ] input fields in prodoucts store column
 
-[ ] display error message on login page
+[ ] users view
+  [ ] CRUD functionality
+  [ ] make sure we are hiding navigation items and buttons on products page for normal users
+
+----
+
+[ ] display error message on pages where
 [ ] make sure the admin routes are secured
+
+[ ] Views
+  [ ] Products
+  [ ] Shops
+  [ ] Users
+  [ ] Shopping List
+  [ ] 404

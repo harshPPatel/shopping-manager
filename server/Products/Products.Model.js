@@ -4,7 +4,7 @@ const ProductSchema = new Schema({
   name: {
     type: String,
     trim: true,
-    match: /^\S+$/,
+    match: /[\w ]+/,
     required: true,
   },
   price: {

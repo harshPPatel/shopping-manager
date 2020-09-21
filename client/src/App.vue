@@ -20,6 +20,11 @@
             <v-list-item-title>Stores</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+        <v-list-item link to="/shopping-list" v-if="user.isAdmin">
+          <v-list-item-content>
+            <v-list-item-title>Shopping List</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
 
