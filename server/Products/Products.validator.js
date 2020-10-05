@@ -26,23 +26,30 @@ const productValidator = async (req, res, next) => {
 };
 
 const productQuantitySchema = joi.object({
-  [process.env.STORE1]: joi.number().min(0).required(),
-  [process.env.STORE2]: joi.number().min(0).required(),
-  [process.env.STORE3]: joi.number().min(0).required(),
+  productId: joi.objectId(),
+  quantities: {
+    [process.env.STORE1]: joi.number().min(0).required(),
+    [process.env.STORE2]: joi.number().min(0).required(),
+    [process.env.STORE3]: joi.number().min(0).required(),
+  },
 });
 
-const productQuantityValidator = async (req, res, next) => {
-  const result = await productQuantitySchema.validate(req.body);
+const productQuantitiesArraySchema = joi.object({
+  products: joi.array().items(productQuantitySchema),
+});
+
+const productQuantititiesValidator = async (req, res, next) => {
+  const result = await productQuantitiesArraySchema.validate(req.body);
   if (result.error) {
     res.status(422);
     next(new Error(result.error));
     return;
   }
-  req.validProductQuantities = result.value;
+  req.validQuantities = result.value.products;
   next();
 };
 
 module.exports = {
   productValidator,
-  productQuantityValidator,
+  productQuantititiesValidator,
 };

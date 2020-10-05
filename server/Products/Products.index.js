@@ -1,7 +1,7 @@
 const { Router } = require('express');
 
 const Product = require('./Products.Model');
-const { productValidator, productQuantityValidator } = require('./Products.validator');
+const { productValidator, productQuantititiesValidator } = require('./Products.validator');
 const AuthMiddleware = require('../Middlewares/Auth.middleware');
 const ProductsModel = require('./Products.Model');
 
@@ -33,6 +33,29 @@ productsRouter.post('/create', AuthMiddleware.userIsAdmin, productValidator, asy
       });
     })
     .catch(next);
+});
+
+productsRouter.patch('/quantities', productQuantititiesValidator, async (req, res, next) => {
+  const { validQuantities } = req;
+  const updatedProducts = [];
+  validQuantities.forEach(async ({ productId, quantities }, index) => {
+    await Product.findByIdAndUpdate(productId, {
+      quantities,
+    }, { new: true },
+    (err, doc) => {
+      if (err) {
+        next(new Error(err));
+        return;
+      }
+      updatedProducts.push(doc);
+    });
+  });
+
+  res.status(200);
+  res.json({
+    message: 'Updated the products\' quantities successfully',
+    updatedProducts,
+  });
 });
 
 productsRouter.patch('/:productId', AuthMiddleware.userIsAdmin, productValidator, async (req, res, next) => {
@@ -82,44 +105,6 @@ productsRouter.delete('/:productId', AuthMiddleware.userIsAdmin, async (req, res
         deletedProductId: productId,
       });
     }).catch(next);
-});
-
-const isQuantitySimilar = (quantities, updatedQuantites) => (
-  quantities[process.env.STORE1] === updatedQuantites[process.env.STORE1]
-  && quantities[process.env.STORE2] === updatedQuantites[process.env.STORE2]
-  && quantities[process.env.STORE3] === updatedQuantites[process.env.STORE3]);
-
-productsRouter.patch('/:productId/quantity', AuthMiddleware.userIsAdmin, productQuantityValidator, async (req, res, next) => {
-  const id = req.params.productId;
-
-  const dbProduct = await ProductsModel.findById(id).exec();
-
-  if (!dbProduct) {
-    res.status(404);
-    next(new Error('Product does not exists'));
-    return;
-  }
-
-  const { validProductQuantities } = req;
-
-  if (isQuantitySimilar(dbProduct.quantities, validProductQuantities)) {
-    res.status(422);
-    next(new Error('Invalid quantities values'));
-    return;
-  }
-
-  dbProduct.quantities = validProductQuantities;
-
-  dbProduct.save()
-    .then(() => {
-      res.status(200);
-      res.json({
-        message: 'Updated product Quantities successfully',
-        updatedQuantites: validProductQuantities,
-        productId: id,
-      });
-    })
-    .catch(next);
 });
 
 module.exports = productsRouter;

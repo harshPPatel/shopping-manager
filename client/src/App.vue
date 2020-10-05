@@ -15,9 +15,9 @@
             <v-list-item-title>Users</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item link to="/stores" v-if="user.isAdmin">
+        <v-list-item link to="/shops" v-if="user.isAdmin">
           <v-list-item-content>
-            <v-list-item-title>Stores</v-list-item-title>
+            <v-list-item-title>Shops</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
         <v-list-item link to="/shopping-list" v-if="user.isAdmin">

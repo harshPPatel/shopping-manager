@@ -67,6 +67,13 @@ export default {
         })
         .catch(console.log);
     },
+    async updateQuantities(_, items) {
+      console.log(items);
+      // eslint-disable-next-line
+      await API(REQUEST_METHODS.PATCH, `/products/quantities`, items)
+        .then(console.log)
+        .catch(console.error);
+    },
   },
   namespaced: true,
 };
