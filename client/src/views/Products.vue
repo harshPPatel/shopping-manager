@@ -4,7 +4,7 @@
       :headers="headers"
       :items="product.products"
       :search="search"
-      sort-by="calories"
+      sort-by="name"
       class="elevation-1"
     >
       <template v-slot:top>
@@ -39,7 +39,7 @@
                 v-bind="attrs"
                 v-on="on"
                 v-if="user.isAdmin"
-              >New Item</v-btn>
+              >New Product</v-btn>
             </template>
             <v-card>
               <v-card-title>

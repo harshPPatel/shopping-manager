@@ -7,6 +7,7 @@ export default {
     isLoggedIn: false,
     username: '',
     authError: null,
+    users: [],
   },
   getters: {
 
@@ -23,6 +24,20 @@ export default {
     },
     updateAuthError(state, value) {
       state.authError = value;
+    },
+    updateUsers(state, value) {
+      state.users = value;
+    },
+    addUser(state, value) {
+      state.users.push(value);
+    },
+    updateUser(state, value) {
+      const userIndex = state.users.findIndex((user) => user.username === value.username);
+      state.users.splice(userIndex, 1, value);
+    },
+    deleteUser(state, value) {
+      const userIndex = state.users.findIndex((user) => user.username === value.username);
+      state.users.splice(userIndex, 1);
     },
   },
   actions: {
@@ -55,6 +70,52 @@ export default {
       commit('updateIsLoggedIn', true, { module: 'user' });
       commit('updateIsAdmin', isAdmin, { module: 'user' });
       commit('updateAuthError', null, { module: 'user' });
+    },
+    async fetchUsers({ commit }) {
+      await API(REQUEST_METHODS.GET, '/users/')
+        .then(({ users }) => {
+          commit('updateUsers', users, { module: 'users' });
+        })
+        .catch((err) => {
+          console.log(err);
+          // add it to products error message
+        });
+    },
+    async createUser({ commit }, item) {
+      commit('updateAuthError', null, { module: 'user' });
+      await API(REQUEST_METHODS.POST, '/users/create', item)
+        .then(({ createdUser }) => {
+          commit('addUser', createdUser, { module: 'user' });
+        })
+        .catch((err) => {
+          console.error(err);
+          commit('updateAuthError', err.message, { module: 'user' });
+        });
+    },
+    async updateUser({ commit }, item) {
+      commit('updateAuthError', null, { module: 'user' });
+      await API(REQUEST_METHODS.PATCH, `/users/${item.username}`, {
+        username: item.newUsername,
+        password: item.password,
+      })
+        .then(({ updatedUser }) => {
+          commit('updateUser', updatedUser, { module: 'user' });
+        })
+        .catch((err) => {
+          console.error(err);
+          commit('updateAuthError', err.message, { module: 'user' });
+        });
+    },
+    async deleteUser({ commit }, username) {
+      commit('updateAuthError', null, { module: 'user' });
+      await API(REQUEST_METHODS.DELETE, `/users/${username}`)
+        .then(({ deletedUser }) => {
+          commit('deleteUser', deletedUser, { module: 'user' });
+        })
+        .catch((err) => {
+          console.error(err);
+          commit('updateAuthError', err.message, { module: 'user' });
+        });
     },
   },
   namespaced: true,

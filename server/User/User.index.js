@@ -8,7 +8,9 @@ const Bcrypt = require('../Lib/Bcrypt.lib');
 const Router = express.Router();
 
 Router.get('/', async (req, res) => {
-  const dbUsers = await User.find().exec();
+  const dbUsers = await User.find(
+    { username: { $ne: process.env.ADMIN_USERNAME.toString() } },
+  ).exec();
   const responseUsers = dbUsers.map((user) => ({
     username: user.username,
     createdAt: user.createdAt,
@@ -33,7 +35,11 @@ Router.post('/create', CreateUserValidator, async (req, res, next) => {
     .then(() => {
       res.status(200);
       res.json({
-        createdUser: dbUser.username,
+        createdUser: {
+          username: dbUser.username,
+          createdAt: dbUser.createdAt,
+          updatedAt: dbUser.updatedAt,
+        },
         message: 'User has been created sucessfully',
       });
     })
@@ -47,7 +53,7 @@ Router.post('/create', CreateUserValidator, async (req, res, next) => {
     });
 });
 
-Router.put('/:username', UserValidators.updateValidator, async (req, res, next) => {
+Router.patch('/:username', UserValidators.updateValidator, async (req, res, next) => {
   const dbUser = await User.findOne({
     username: req.params.username.toString().trim(),
   }).exec();
@@ -73,7 +79,11 @@ Router.put('/:username', UserValidators.updateValidator, async (req, res, next) 
     .then(() => {
       res.status(200);
       res.json({
-        editedUser: dbUser.username,
+        updatedUser: {
+          username: dbUser.username,
+          createdAt: dbUser.createdAt,
+          updatedAt: dbUser.updatedAt,
+        },
         message: 'User has been updated successfully',
       });
     })
