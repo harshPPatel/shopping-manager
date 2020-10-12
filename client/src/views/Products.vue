@@ -60,6 +60,19 @@
                     <v-col cols="12" sm="6" md="4">
                       <v-text-field v-model="editedItem.image" label="Image URL"></v-text-field>
                     </v-col>
+                    <v-col cols="12">
+                      <v-combobox
+                        v-model="editedItem.shops"
+                        label="Add Shops"
+                        chips
+                        :items="shop.shops"
+                        item-text="name"
+                        item-value="_id"
+                        solo
+                        multiple
+                      >
+                      </v-combobox>
+                    </v-col>
                   </v-row>
                 </v-container>
               </v-card-text>
@@ -125,6 +138,7 @@ export default {
     dialog: false,
     search: '',
     STORE_NAMES,
+    shopNames: [],
     headers: [
       {
         text: 'Product Image',
@@ -160,16 +174,18 @@ export default {
       name: '',
       price: 0,
       image: '',
+      shops: [],
     },
     defaultItem: {
       name: '',
       price: 0,
       image: '',
+      shops: [],
     },
     editedQuantityItems: [],
   }),
   computed: {
-    ...mapState(['user', 'product']),
+    ...mapState(['user', 'product', 'shop']),
     formTitle() {
       return this.editedIndex === -1 ? 'New Product' : 'Edit Product';
     },
@@ -180,8 +196,10 @@ export default {
       val || this.close();
     },
   },
-  mounted() {
-    this.$store.dispatch('product/fetchProducts');
+  async mounted() {
+    await this.$store.dispatch('product/fetchProducts');
+    await this.$store.dispatch('shop/fetchShops');
+    this.shop.shops.forEach((shop) => this.shopNames.push(shop.name));
   },
   methods: {
     editItem(item) {
@@ -191,6 +209,7 @@ export default {
       this.editedItem.name = item.name;
       this.editedItem.price = item.price;
       this.editedItem.image = item.image;
+      this.editedItem.shops = item.shops;
       this.dialog = true;
     },
 

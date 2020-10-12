@@ -74,7 +74,7 @@ export default {
     async fetchUsers({ commit }) {
       await API(REQUEST_METHODS.GET, '/users/')
         .then(({ users }) => {
-          commit('updateUsers', users, { module: 'users' });
+          commit('updateUsers', users, { module: 'user' });
         })
         .catch((err) => {
           console.log(err);

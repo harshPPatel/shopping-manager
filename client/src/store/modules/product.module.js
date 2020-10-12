@@ -40,18 +40,30 @@ export default {
         });
     },
     async updateProduct({ commit }, { id, item }) {
+      const payloadProduct = {
+        ...item,
+        price: item.price.toString(),
+        // eslint-disable-next-line
+        shops: item.shops.map((shop) => shop._id),
+      };
       // eslint-disable-next-line
       item.price = item.price.toString();
-      await API(REQUEST_METHODS.PATCH, `/products/${id}`, item)
+      await API(REQUEST_METHODS.PATCH, `/products/${id}`, payloadProduct)
         .then(({ updatedProduct }) => {
           commit('updateProduct', updatedProduct, { module: 'product' });
         })
         .catch(console.log);
     },
     async createProduct({ commit }, item) {
+      const payloadProduct = {
+        ...item,
+        price: item.price.toString(),
+        // eslint-disable-next-line
+        shops: item.shops.map((shop) => shop._id),
+      };
       // eslint-disable-next-line
       item.price = item.price.toString();
-      await API(REQUEST_METHODS.POST, '/products/create', item)
+      await API(REQUEST_METHODS.POST, '/products/create', payloadProduct)
         .then(({ createdProduct }) => {
           commit('createdProduct', createdProduct, { module: 'product' });
         })

@@ -23,7 +23,7 @@ ShopsRouter.post('/create', shopsValidator, (req, res, next) => {
       res.status(200);
       res.json({
         message: 'Created shop successfully',
-        createdShopName: dbShop.name,
+        createdShop: dbShop,
       });
     })
     .catch(next);
@@ -54,7 +54,7 @@ ShopsRouter.patch('/:id', shopsValidator, async (req, res, next) => {
       res.status(200);
       res.json({
         message: 'Updated shop successfully',
-        updatedShopName: dbShop.name,
+        updatedShop: dbShop,
       });
     })
     .catch(next);

@@ -1,17 +1,28 @@
 const { Router } = require('express');
 
 const Product = require('./Products.Model');
+const Shop = require('../Shops/Shops.model');
 const { productValidator, productQuantititiesValidator } = require('./Products.validator');
 const AuthMiddleware = require('../Middlewares/Auth.middleware');
-const ProductsModel = require('./Products.Model');
 
 const productsRouter = Router();
 
 productsRouter.get('/', async (req, res) => {
   const products = await Product.find().exec();
+  const shops = await Shop.find().exec();
+  const returnProducts = [];
+  products.forEach((product) => {
+    // eslint-disable-next-line
+    const returnProduct = { ...product._doc };
+    // eslint-disable-next-line
+    const productShops = shops.filter((shop) => product.shops.includes(shop._id));
+    // eslint-disable-next-line
+    returnProduct.shops = productShops;
+    returnProducts.push(returnProduct);
+  });
   res.status(200);
   res.json({
-    products,
+    products: returnProducts,
     totalProducts: products.length,
     message: 'List of all products!',
   });
@@ -66,25 +77,27 @@ productsRouter.patch('/:productId', AuthMiddleware.userIsAdmin, productValidator
     next(new Error('Product does not exists'));
     return;
   }
-  const shopRegex = new RegExp(`(${DbProduct.shops.join('|')})`);
-  if (DbProduct.name === req.validProduct.name
-    && DbProduct.image === req.validProduct.image
-    && DbProduct.price === parseFloat(req.validProduct.price)
-    && shopRegex.test(req.validProduct.shops.join('|'))) {
-    res.status(422);
-    next(new Error('Update data is invalid'));
-  }
+  // const shopRegex = new RegExp(`(${DbProduct.shops.join('|')})`);
+  DbProduct.shops = req.validProduct.shops;
   DbProduct.name = req.validProduct.name;
   DbProduct.price = parseFloat(req.validProduct.price);
   DbProduct.image = req.validProduct.image;
-  DbProduct.shops = req.validProduct.shops;
+
+  const shops = await Shop.find().exec();
+  // eslint-disable-next-line
+  const returnProduct = { ...DbProduct._doc };
+  // eslint-disable-next-line
+  const productShops = shops.filter((shop) => req.validProduct.shops.includes(shop.id));
+
+  // eslint-disable-next-line
+  returnProduct.shops = productShops;
 
   DbProduct.save()
     .then(() => {
       res.status(200);
       res.json({
         message: 'Product has been updated successfully',
-        updatedProduct: DbProduct,
+        updatedProduct: returnProduct,
       });
     }).catch(next);
 });
